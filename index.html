@@ -5,7 +5,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculadora de Calorias e Custo</title>
     <style>
-        /* --- Estilos CSS --- */
+        :root {
+            /* --- Variáveis de Cores (Tema Claro) --- */
+            --bg-grad-start: #667eea;
+            --bg-grad-end: #764ba2;
+            --container-bg: rgba(255, 255, 255, 0.95);
+            --text-primary: #333;
+            --text-secondary: #555;
+            --input-bg: white;
+            --input-border: #e1e8ed;
+            --card-bg: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+            --card-border: #667eea;
+            --footer-text: #777;
+            --warning-bg: #fff3e0;
+            --warning-border: #ff9800;
+            --warning-text: #e65100;
+        }
+
+        /* --- Tema Escuro --- */
+        body.dark-mode {
+            --bg-grad-start: #2c3e50;
+            --bg-grad-end: #4b6cb7;
+            --container-bg: rgba(44, 62, 80, 0.9);
+            --text-primary: #ecf0f1;
+            --text-secondary: #bdc3c7;
+            --input-bg: #2c3e50;
+            --input-border: #566573;
+            --card-bg: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
+            --card-border: #8293ff;
+            --footer-text: #95a5a6;
+            --warning-bg: #4e342e;
+            --warning-border: #ffb74d;
+            --warning-text: #ffcc80;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -14,20 +47,22 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--bg-grad-start) 0%, var(--bg-grad-end) 100%);
             min-height: 100vh;
             padding: 20px;
+            transition: background 0.4s ease;
         }
 
         .container {
             max-width: 800px;
             margin: 0 auto;
-            background: rgba(255, 255, 255, 0.95);
+            background: var(--container-bg);
             backdrop-filter: blur(15px);
             border-radius: 20px;
             padding: 30px;
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
             animation: slideIn 0.8s ease-out;
+            position: relative;
         }
 
         @keyframes slideIn {
@@ -40,14 +75,42 @@
                 transform: translateY(0);
             }
         }
+        
+        /* Botão de Tema */
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            color: var(--text-secondary);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        .theme-toggle:hover {
+            transform: scale(1.1);
+        }
 
         h1 {
             text-align: center;
-            font-size: 2.5em;
+            font-size: clamp(2em, 5vw, 2.5em);
             margin-bottom: 30px;
             background: linear-gradient(45deg, #667eea, #764ba2);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .dark-mode h1 {
+            background: linear-gradient(45deg, #a2b2ee, #c8a2c8);
+            -webkit-background-clip: text;
             background-clip: text;
         }
 
@@ -65,7 +128,7 @@
         label {
             display: block;
             margin-bottom: 8px;
-            color: #555;
+            color: var(--text-secondary);
             font-weight: 600;
             font-size: 0.95em;
         }
@@ -73,11 +136,12 @@
         input, select {
             width: 100%;
             padding: 15px;
-            border: 2px solid #e1e8ed;
+            border: 2px solid var(--input-border);
             border-radius: 12px;
             font-size: 16px;
             transition: all 0.3s ease;
-            background: white;
+            background: var(--input-bg);
+            color: var(--text-primary);
         }
 
         input:focus, select:focus {
@@ -136,11 +200,11 @@
         }
 
         .result-card {
-            background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+            background: var(--card-bg);
             border-radius: 15px;
             padding: 25px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            border-left: 5px solid #667eea;
+            border-left: 5px solid var(--card-border);
             position: relative;
             overflow: hidden;
         }
@@ -158,7 +222,7 @@
         }
 
         .result-card h3 {
-            color: #333;
+            color: var(--text-primary);
             margin-bottom: 15px;
             font-size: 1.4em;
             display: flex;
@@ -171,7 +235,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 12px 0;
-            border-bottom: 1px solid #eef2f7;
+            border-bottom: 1px solid var(--input-border);
         }
 
         .result-item:last-child {
@@ -179,13 +243,13 @@
         }
 
         .result-label {
-            color: #666;
+            color: var(--text-secondary);
             font-weight: 500;
         }
 
         .result-value {
             font-weight: bold;
-            color: #333;
+            color: var(--text-primary);
             font-size: 1.1em;
         }
 
@@ -196,98 +260,40 @@
             background-clip: text;
             font-size: 1.3em;
         }
-
-        .macro-chart {
-            background: linear-gradient(135deg, #e8f5e8 0%, #f0f8ff 100%);
+        
+        .dark-mode .highlight-value {
+            background: linear-gradient(45deg, #a2b2ee, #c8a2c8);
+            -webkit-background-clip: text;
+            background-clip: text;
+        }
+        
+        /* Estilo do Alerta Profissional */
+        .professional-alert {
+            grid-column: 1 / -1; /* Ocupa a largura total */
+            background: var(--warning-bg);
+            color: var(--warning-text);
+            border-left: 5px solid var(--warning-border);
             border-radius: 15px;
-            padding: 20px;
-            margin-top: 20px;
+            padding: 25px;
+            font-size: 1em;
+            text-align: left;
+            line-height: 1.6;
         }
-
-        .macro-bar {
-            display: flex;
-            height: 20px;
-            border-radius: 10px;
-            overflow: hidden;
-            margin: 10px 0;
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .macro-segment {
-            transition: width 0.8s ease;
-        }
-
-        .carbs { background: linear-gradient(45deg, #4caf50, #66bb6a); }
-        .proteins { background: linear-gradient(45deg, #2196f3, #42a5f5); }
-        .fats { background: linear-gradient(45deg, #ff9800, #ffb74d); }
-
-        .macro-legend {
-            display: flex;
-            justify-content: space-around;
-            margin-top: 15px;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.9em;
-        }
-
-        .legend-color {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-        }
-
-        .cost-breakdown {
-            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
-            border-radius: 15px;
-            padding: 20px;
-            margin-top: 20px;
-        }
-
-        .cost-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            font-size: 0.95em;
-        }
-
-        .cost-total {
-            border-top: 2px solid #ff9800;
-            padding-top: 12px;
-            margin-top: 12px;
-            font-weight: bold;
-            font-size: 1.1em;
-        }
-
-        .info-card {
-            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-            border-radius: 15px;
-            padding: 20px;
-            margin-top: 20px;
-            border-left: 5px solid #2196f3;
-        }
-
-        .info-card h4 {
-            color: #1976d2;
+        .professional-alert strong {
+            display: block;
             margin-bottom: 10px;
             font-size: 1.2em;
         }
 
-        .info-card ul {
-            color: #1565c0;
-            padding-left: 20px;
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid var(--input-border);
+            font-size: 14px;
+            color: var(--footer-text);
         }
-
-        .info-card li {
-            margin-bottom: 5px;
-            font-size: 0.9em;
-        }
-
+        
         .error-message {
             background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
             color: #c62828;
@@ -298,31 +304,23 @@
             text-align: center;
             animation: shake 0.5s ease-in-out;
         }
+        
+        .dark-mode .error-message {
+            background: linear-gradient(135deg, #4c1113 0%, #c62828 100%);
+            color: #ef9a9a;
+        }
 
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
             25% { transform: translateX(-5px); }
             75% { transform: translateX(5px); }
         }
-
-        @media (max-width: 768px) {
-            .container {
-                padding: 20px;
-                margin: 10px;
-            }
-            
-            h1 {
-                font-size: 2em;
-            }
-            
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-        }
     </style>
 </head>
 <body>
     <div class="container">
+        <button class="theme-toggle" id="themeToggle" aria-label="Alternar tema">🌙</button>
+
         <h1>🔥 Calculadora de Calorias & Custo</h1>
         
         <div class="form-grid">
@@ -379,14 +377,12 @@
 
         <button class="calc-button" id="calcularBtn">🔍 Calcular Necessidades</button>
 
-        <div class="results-container" id="resultados" aria-live="polite">
-            </div>
+        <div class="results-container" id="resultados" aria-live="polite"></div>
+        
+        <footer id="signature"></footer>
     </div>
 
     <script>
-        /* --- Lógica JavaScript --- */
-
-        // Caching de elementos DOM para melhor desempenho
         const pesoInput = document.getElementById('peso');
         const alturaInput = document.getElementById('altura');
         const idadeInput = document.getElementById('idade');
@@ -396,107 +392,35 @@
         const custoPor1000Input = document.getElementById('custoPor1000');
         const calcularBtn = document.getElementById('calcularBtn');
         const resultadosDiv = document.getElementById('resultados');
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
 
-        // --- Funções de Cálculo ---
-
-        /**
-         * Calcula a Taxa Metabólica Basal (TMB) usando a fórmula de Mifflin-St Jeor.
-         * @param {number} peso - Peso em kg.
-         * @param {number} altura - Altura em cm.
-         * @param {number} idade - Idade em anos.
-         * @param {string} sexo - 'masculino' ou 'feminino'.
-         * @returns {number} TMB em kcal.
-         */
         function calcularTMB(peso, altura, idade, sexo) {
             return sexo === 'masculino'
                 ? (10 * peso) + (6.25 * altura) - (5 * idade) + 5
                 : (10 * peso) + (6.25 * altura) - (5 * idade) - 161;
         }
 
-        /**
-         * Calcula o Índice de Massa Corporal (IMC).
-         * @param {number} peso - Peso em kg.
-         * @param {number} altura - Altura em cm.
-         * @returns {number} Valor do IMC.
-         */
         function calcularIMC(peso, altura) {
-            const alturaM = altura / 100; // Converte altura para metros
+            const alturaM = altura / 100;
             return peso / (alturaM * alturaM);
         }
 
-        /**
-         * Classifica o IMC em categorias e sugere uma cor.
-         * @param {number} imc - Valor do IMC.
-         * @returns {{status: string, cor: string}} Objeto com status e cor.
-         */
         function classificarIMC(imc) {
-            if (imc < 18.5) return { status: 'Abaixo do peso', cor: '#2196f3' }; // Azul
-            if (imc < 25) return { status: 'Peso normal', cor: '#4caf50' };     // Verde
-            if (imc < 30) return { status: 'Sobrepeso', cor: '#ff9800' };    // Laranja
-            if (imc < 35) return { status: 'Obesidade I', cor: '#f44336' };    // Vermelho claro
-            if (imc < 40) return { status: 'Obesidade II', cor: '#d32f2f' };   // Vermelho médio
-            return { status: 'Obesidade III', cor: '#b71c1c' };              // Vermelho escuro
+            if (imc < 18.5) return { status: 'Abaixo do peso', cor: '#2196f3' };
+            if (imc < 25) return { status: 'Peso normal', cor: '#4caf50' };
+            if (imc < 30) return { status: 'Sobrepeso', cor: '#ff9800' };
+            if (imc < 35) return { status: 'Obesidade I', cor: '#f44336' };
+            if (imc < 40) return { status: 'Obesidade II', cor: '#d32f2f' };
+            return { status: 'Obesidade III', cor: '#b71c1c' };
         }
 
-        /**
-         * Calcula a distribuição padrão de macronutrientes (50% Carb, 25% Prot, 25% Gord).
-         * @param {number} calorias - Total de calorias diárias.
-         * @returns {{carbs: number, proteinas: number, gorduras: number}} Quantidades em gramas.
-         */
-        function calcularMacronutrientes(calorias) {
-            const carbs = Math.round((calorias * 0.5) / 4);   // 4 kcal/g de carboidrato
-            const proteinas = Math.round((calorias * 0.25) / 4); // 4 kcal/g de proteína
-            const gorduras = Math.round((calorias * 0.25) / 9); // 9 kcal/g de gordura
-            
-            return { carbs, proteinas, gorduras };
-        }
-
-        // --- Funções de UI e Validação ---
-
-        /**
-         * Exibe uma mensagem de erro na área de resultados.
-         * @param {string} mensagem - A mensagem de erro a ser exibida.
-         */
         function exibirErro(mensagem) {
-            resultadosDiv.innerHTML = `
-                <div class="error-message">
-                    ⚠️ ${mensagem}
-                </div>
-            `;
+            resultadosDiv.innerHTML = `<div class="error-message">⚠️ ${mensagem}</div>`;
             resultadosDiv.classList.add('show');
         }
 
-        /**
-         * Formata o número para o padrão brasileiro (vírgula como separador decimal).
-         * Esta função é adicionada aos eventos de 'blur' dos inputs.
-         * @param {HTMLInputElement} inputElement - O elemento input a ser formatado.
-         */
-        const formatNumberToBrazilian = (inputElement) => {
-            inputElement.addEventListener('blur', () => {
-                let value = inputElement.value;
-                if (value && !isNaN(parseFloat(value))) {
-                    // Garante que o valor é um número antes de formatar
-                    value = parseFloat(value).toFixed(inputElement.step.includes('.') ? 2 : 0); // Mantém casas decimais se o step tiver ponto
-                    inputElement.value = value.replace('.', ',');
-                }
-            });
-
-            // Ao focar, retorna ao padrão americano para facilitar a edição numérica
-            inputElement.addEventListener('focus', () => {
-                let value = inputElement.value;
-                if (value) {
-                    inputElement.value = value.replace(',', '.');
-                }
-            });
-        };
-
-        // --- Função Principal de Cálculo ---
-
-        /**
-         * Executa todos os cálculos e renderiza os resultados na página.
-         */
         function calcular() {
-            // Coleta os valores dos inputs
             const peso = parseFloat(pesoInput.value);
             const altura = parseFloat(alturaInput.value);
             const idade = parseInt(idadeInput.value);
@@ -505,33 +429,29 @@
             const objetivo = objetivoSelect.value;
             const custoPor1000 = parseFloat(custoPor1000Input.value);
 
-            // Esconde resultados anteriores e mensagens de erro antes de um novo cálculo
             resultadosDiv.classList.remove('show');
             resultadosDiv.innerHTML = ''; 
 
-            // Validação de entrada
             if (isNaN(peso) || peso < 30 || peso > 200) {
-                exibirErro('Por favor, insira um **Peso** válido (entre 30 e 200 kg).');
+                exibirErro('Por favor, insira um <strong>Peso</strong> válido (entre 30 e 200 kg).');
                 return;
             }
             if (isNaN(altura) || altura < 120 || altura > 220) {
-                exibirErro('Por favor, insira uma **Altura** válida (entre 120 e 220 cm).');
+                exibirErro('Por favor, insira uma <strong>Altura</strong> válida (entre 120 e 220 cm).');
                 return;
             }
             if (isNaN(idade) || idade < 15 || idade > 100) {
-                exibirErro('Por favor, insira uma **Idade** válida (entre 15 e 100 anos).');
+                exibirErro('Por favor, insira uma <strong>Idade</strong> válida (entre 15 e 100 anos).');
                 return;
             }
             if (isNaN(custoPor1000) || custoPor1000 < 5 || custoPor1000 > 50) {
-                exibirErro('Por favor, insira um **Custo por 1000 kcal** válido (entre R$ 5,00 e R$ 50,00).');
+                exibirErro('Por favor, insira um <strong>Custo por 1000 kcal</strong> válido (entre R$ 5,00 e R$ 50,00).');
                 return;
             }
 
-            // Realiza os cálculos principais
             const tmb = calcularTMB(peso, altura, idade, sexo);
             let calorias = tmb * atividade;
             
-            // Ajusta as calorias com base no objetivo
             switch(objetivo) {
                 case 'emagrecer': calorias -= 500; break;
                 case 'engordar': calorias += 500; break;
@@ -541,15 +461,12 @@
 
             const imc = calcularIMC(peso, altura);
             const classificacaoIMC = classificarIMC(imc);
-            const macros = calcularMacronutrientes(calorias);
             
-            // Calcula os custos
             const custoDia = (calorias / 1000) * custoPor1000;
             const custoSemana = custoDia * 7;
-            const custoMes = custoDia * 30; // Estimativa de 30 dias por mês
+            const custoMes = custoDia * 30;
             const custoAno = custoDia * 365;
 
-            // Constrói o HTML para a previsão de tempo do objetivo, se aplicável
             let tempoObjetivoHtml = '';
             if (objetivo.includes('emagrecer')) {
                 const kgPorSemana = objetivo === 'emagrecer_intenso' ? 0.75 : 0.5;
@@ -569,7 +486,6 @@
                 `;
             }
 
-            // Renderiza todos os resultados na div de resultados
             resultadosDiv.innerHTML = `
                 <div class="result-card">
                     <h3>📊 Dados Corporais</h3>
@@ -593,82 +509,44 @@
                 </div>
 
                 <div class="result-card">
-                    <h3>🍽️ Macronutrientes</h3>
-                    <div class="macro-chart">
-                        <div class="macro-bar">
-                            <div class="macro-segment carbs" style="width: 50%"></div>
-                            <div class="macro-segment proteins" style="width: 25%"></div>
-                            <div class="macro-segment fats" style="width: 25%"></div>
-                        </div>
-                        <div class="macro-legend">
-                            <div class="legend-item">
-                                <div class="legend-color carbs"></div>
-                                <span>Carboidratos: ${macros.carbs}g (50%)</span>
-                            </div>
-                            <div class="legend-item">
-                                <div class="legend-color proteins"></div>
-                                <span>Proteínas: ${macros.proteinas}g (25%)</span>
-                            </div>
-                            <div class="legend-item">
-                                <div class="legend-color fats"></div>
-                                <span>Gorduras: ${macros.gorduras}g (25%)</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="result-card">
                     <h3>💰 Análise de Custos</h3>
-                    <div class="cost-breakdown">
-                        <div class="cost-item">
-                            <span>Custo por Dia:</span>
-                            <span>R$ ${custoDia.toFixed(2).replace('.', ',')}</span>
-                        </div>
-                        <div class="cost-item">
-                            <span>Custo por Semana:</span>
-                            <span>R$ ${custoSemana.toFixed(2).replace('.', ',')}</span>
-                        </div>
-                        <div class="cost-item">
-                            <span>Custo por Mês:</span>
-                            <span>R$ ${custoMes.toFixed(2).replace('.', ',')}</span>
-                        </div>
-                        <div class="cost-item cost-total">
-                            <span>Custo Anual:</span>
-                            <span>R$ ${custoAno.toFixed(2).replace('.', ',')}</span>
-                        </div>
+                    <div class="result-item">
+                        <span class="result-label">Custo por Dia:</span>
+                        <span class="result-value">R$ ${custoDia.toFixed(2).replace('.', ',')}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Custo por Semana:</span>
+                        <span class="result-value">R$ ${custoSemana.toFixed(2).replace('.', ',')}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Custo por Mês:</span>
+                        <span class="result-value">R$ ${custoMes.toFixed(2).replace('.', ',')}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Custo Anual:</span>
+                        <span class="result-value highlight-value">R$ ${custoAno.toFixed(2).replace('.', ',')}</span>
                     </div>
                 </div>
 
-                <div class="info-card">
-                    <h4>💡 Dicas Importantes</h4>
-                    <ul>
-                        <li>Distribua as refeições ao longo do dia (5-6 refeições)</li>
-                        <li>Beba pelo menos 2-3 litros de água por dia</li>
-                        <li>Inclua exercícios de força para preservar massa muscular</li>
-                        <li>Consulte um nutricionista para um plano personalizado</li>
-                        <li>Monitore seu progresso semanalmente</li>
-                        <li>Ajuste as calorias conforme os resultados obtidos</li>
-                    </ul>
+                <!-- Alerta Profissional Adicionado -->
+                <div class="professional-alert">
+                    <strong>Atenção:</strong>
+                    <p>
+                        Esta calculadora fornece estimativas para fins educacionais e de pesquisa. Os resultados não substituem a avaliação e o acompanhamento de um nutricionista ou médico. Consulte um profissional para um plano alimentar personalizado e seguro.
+                    </p>
                 </div>
             `;
 
-            // Mostra a div de resultados com a animação
             resultadosDiv.classList.add('show');
         }
 
-        // --- Event Listeners ---
-
-        // Adiciona o evento de clique ao botão calcular
         calcularBtn.addEventListener('click', calcular);
-
-        // Permite calcular ao pressionar Enter em qualquer lugar da página
         document.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 calcular();
             }
         });
 
-        // Adiciona animações de foco e blur para todos os inputs e selects
         const allFormElements = document.querySelectorAll('input, select');
         allFormElements.forEach(element => {
             element.addEventListener('focus', function() {
@@ -680,9 +558,35 @@
             });
         });
 
-        // Aplica a formatação de número para inputs específicos que podem ter decimais
-        formatNumberToBrazilian(pesoInput);
-        formatNumberToBrazilian(custoPor1000Input);
+        // --- LÓGICA DO TEMA ESCURO E ASSINATURA ---
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            if (body.classList.contains('dark-mode')) {
+                localStorage.setItem('theme', 'dark');
+                themeToggle.textContent = '☀️';
+            } else {
+                localStorage.setItem('theme', 'light');
+                themeToggle.textContent = '🌙';
+            }
+        });
+
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                body.classList.add('dark-mode');
+                themeToggle.textContent = '☀️';
+            } else {
+                themeToggle.textContent = '🌙';
+            }
+        }
+
+        function setSignature() {
+            document.getElementById('signature').textContent = `Feito por HAlexandre em 30/07/2025 às 22:20`;
+        }
+
+        // Inicializar
+        loadTheme();
+        setSignature();
     </script>
 </body>
 </html>
